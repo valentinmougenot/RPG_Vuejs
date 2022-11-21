@@ -5,7 +5,10 @@
         <h1>Les personnages</h1>
         <label for="filteractive">filtrage possible : </label><input type="checkbox" v-model="filterActive" id="filteractive">
         <div v-if="filterActive">
-          <label for="filterperso">filtre : </label><input v-model="filter" id="filterperso">
+          <v-select
+            v-model="filter"
+            :items="getPersosName()"
+            label="Filtres"></v-select>
         </div>
         <ul>
           <li v-for="(perso, index) in persosFiltre" :key="index">{{perso.nom}}</li>
@@ -106,6 +109,14 @@ export default {
     },
     getItemsAchetes() {
       return this.persosFiltre[0].itemsAchetes.map(i => i.nom).join(', ');
+    },
+
+    getPersosName() {
+      let result = [];
+      this.persos.forEach(p => {
+        result.push(p.nom);
+      });
+      return result;
     }
   }
 }
