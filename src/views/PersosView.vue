@@ -65,10 +65,18 @@
           </tr>
           <tr>
             <td>Or : {{persosFiltre[0].or}}</td>
-            <td>{{getItemsAchetesLength() > 1 ? 'items achetés' : 'items acheté'}}
-              <span v-if="getItemsAchetesLength() > 0">
-                [{{getItemsAchetesLength()}}]: {{getItemsAchetes()}}
-              </span>
+            <td>
+              <CheckedList
+                :data="persosFiltre[0].itemsAchetes"
+                :fields="['nom']"
+                :itemCheck="true"
+                :checked="selectedItems"
+                :itemButton="{show: true, text: 'infos'}"
+                :listButton="{show: true, text: 'infos'}"
+                @item-button-clicked="showItemInfo"
+                @list-button-clicked="showListInfo"
+                @checked-changed="changeSelectedItems"
+              ></CheckedList>
             </td>
           </tr>
           </tbody>
@@ -81,12 +89,15 @@
 <script>
 
 import {mapState} from "vuex";
-
 export default {
   name: 'PersosView',
+  components: {
+    CheckedList: () => import('@/components/CheckedList'),
+  },
+
   data: () => ({
     filter: '',
-    filterActive: false
+    filterActive: false,
   }),
   computed: {
     ...mapState(['persos']),
@@ -95,6 +106,9 @@ export default {
         return this.persos.filter(p => p.nom.includes(this.filter))
       }
       return this.persos
+    },
+    selectedItems() {
+      return new Array(this.persosFiltre[0].itemsAchetes.length).fill(true)
     }
   },
   methods: {
@@ -117,8 +131,23 @@ export default {
         result.push(p.nom);
       });
       return result;
+    },
+    showItemInfo(i) {
+      alert(this.persosFiltre[0].itemsAchetes[i].nom + ' : ' + this.persosFiltre[0].itemsAchetes[i].prix);
+    },
+    showListInfo() {
+      let message = '';
+      for(var i = 0; i < this.persosFiltre[0].itemsAchetes.length; i++) {
+        if (this.selectedItems[i]) {
+          message += this.persosFiltre[0].itemsAchetes[i].nom + ' : ' + this.persosFiltre[0].itemsAchetes[i].prix + '\n';
+        }
+      }
+      alert(message);
+    },
+    changeSelectedItems(i) {
+      this.selectedItems[i] = !this.selectedItems[i];
     }
-  }
+  },
 }
 </script>
 <style scoped>
