@@ -8,6 +8,7 @@
           <v-select
             v-model="filter"
             :items="getPersosName()"
+            @change="$store.commit('setCurrentPerso', persos.filter(perso => perso.nom === filter)[0])"
             label="Filtres"></v-select>
         </div>
         <ul>

@@ -2,11 +2,11 @@
   <div>
     <ul>
       <li v-for="(item, index) in data" :key="index">
-        <div v-for="(value, i) in fields" :key="i">
-          <input type="checkbox" v-if="itemCheck" :checked="checked[i]" @change="$emit('checked-changed', index)">
+        <input type="checkbox" v-if="itemCheck" :checked="checked[index]" @change="$emit('checked-changed', index)">
+        <span v-for="(value, i) in fields" :key="i">
           {{ item[value] }}
-          <button v-if="itemButton.show" @click="$emit('item-button-clicked', index)">{{itemButton.text}}</button>
-        </div>
+        </span>
+        <button v-if="itemButton.show" @click="$emit('item-button-clicked', index)">{{itemButton.text}}</button>
       </li>
     </ul>
     <button v-if="listButton.show" @click="$emit('list-button-clicked')">{{listButton.text}}</button>

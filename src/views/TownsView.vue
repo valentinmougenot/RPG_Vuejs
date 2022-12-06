@@ -33,7 +33,7 @@
                 :checked="[]"
                 :itemButton="{show: true, text: 'Sélectionner'}"
                 :listButton="{show: false, text: ''}"
-                @item-button-clicked="itemButtonClicked"
+                @item-button-clicked="itemButtonClicked($event, index)"
                 ></CheckedList>
             </td>
           </tr>
@@ -42,8 +42,8 @@
       </v-col>
     </v-row>
     <ShopView
-      v-if="boutiqueCourante"
-    :boutique="boutiqueCourante">
+      v-if="$store.state.currentBoutique"
+    :boutique="$store.state.currentBoutique">
     </ShopView>
   </v-container>
 </template>
@@ -60,7 +60,6 @@ export default {
   data: () => ({
     filter: '',
     filterActive: false,
-    boutiqueCourante: null
   }),
   computed: {
     ...mapState(['villes']),
@@ -72,14 +71,13 @@ export default {
     }
   },
   methods: {
-    itemButtonClicked(i) {
-      console.log('itemButtonClicked', i)
-      this.boutiqueCourante = this.villesFiltre[0].rues[0].boutiques[i];
+    itemButtonClicked(i, j) {
+      this.$store.commit('setCurrentBoutique', this.villesFiltre[0].rues[j].boutiques[i])
     }
   },
   updated() {
     if (this.villesFiltre.length !== 1) {
-      this.boutiqueCourante = null
+      this.$store.commit('setCurrentBoutique', null)
     }
   }
 }
