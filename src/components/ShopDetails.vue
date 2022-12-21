@@ -19,8 +19,8 @@
                          :checked="selectedItem"
                          :itemButton="{show: true, text: 'achat'}"
                          :listButton="{show: true, text: 'Acheter selectionnes'}"
-                         @item-button-clicked="commande"
-                         @list-button-clicked="commandeAll"
+                         @item-button-clicked="acheter"
+                         @list-button-clicked="acheterAll"
             >
             </CheckedList>
           </td>
@@ -32,6 +32,7 @@
                :checked="[]"
                :itemButton="{show: true, text: 'Commande'}"
                :listButton="{show: false, text: ''}"
+               @item-button-clicked="commander"
             ></CheckedList>
           </td>
         </tr>
@@ -42,7 +43,7 @@
 
 <script>
 export default {
-  name: "ShopView",
+  name: "ShopDetails",
   components: {
     CheckedList: () => import("@/components/CheckedList.vue")
   },
@@ -55,19 +56,27 @@ export default {
     },
   },
   methods: {
-    commande(i){
+    acheter(i){
       if (this.canBuy(i)){
         this.$store.commit('sell', this.boutique.itemStock[i])
       }
-      console.log('commande')
+      else {
+        alert("Vous n'avez pas assez d'argent")
+      }
     },
-    commandeAll(){
+    acheterAll(){
       this.canBuy();
       console.log('commandeAll')
     },
     canBuy(i){
       return this.boutique.itemStock[i].prix <= this.$store.getters.getPersoOr
-    }
+    },
+    commander(i){
+      const rndNb = Math.floor(Math.random() * (10000 - 2000 + 1)) + 2000;
+      if (confirm("Voulez-vous vraiment commander (temps d'attente : " + rndNb + "ms) ?")) {
+        this.$store.dispatch('order', {item: this.boutique.itemCommande[i], time: rndNb})
+      }
+    },
   }
 }
 </script>

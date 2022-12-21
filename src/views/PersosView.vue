@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    {{persosFiltre[0]}}
     <v-row>
       <v-col cols="12" sm="6" md="6">
         <h1>Les personnages</h1>
@@ -84,12 +85,28 @@
         </table>
       </v-col>
     </v-row>
+    <v-row v-if="persosFiltre.length === 1">
+      <v-col>
+        <v-select
+            v-model=selectedItemName
+            :items="persosFiltre[0].itemsAchetes.map(item => item.nom)"
+            label="Sélectionner un item"></v-select>
+        <v-btn @click="resellItem">Revendre</v-btn>
+      </v-col>
+      <v-col>
+        <v-select
+            v-model=selectedBodyName
+            :items="persosFiltre[0].emplacements.map(empl => empl.nom)"
+            label="Partie du corps sur laquelle (dés)assigner l'item"></v-select>
+        <v-btn @click="assignItem">(Dés)assigner</v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
-
 <script>
 
 import {mapState} from "vuex";
+import {itemLimits} from "@/services/data.service";
 export default {
   name: 'PersosView',
   components: {
@@ -99,6 +116,8 @@ export default {
   data: () => ({
     filter: '',
     filterActive: false,
+    selectedItemName: null,
+    selectedBodyName: null,
   }),
   computed: {
     ...mapState(['persos']),
@@ -147,6 +166,35 @@ export default {
     },
     changeSelectedItems(i) {
       this.selectedItems[i] = !this.selectedItems[i];
+    },
+    resellItem() {
+      const item = this.persosFiltre[0].itemsAchetes.filter(i => i.nom === this.selectedItemName)[0];
+      const coef = (Math.floor(Math.random() * (90 - 40 + 1)) + 40) / 100;
+      const prix = Math.floor(item.prix * coef);
+      if (confirm('Voulez-vous vraiment revendre ' + item.nom + ' pour ' + prix + ' po ?')) {
+        this.$store.commit('resell', {perso: this.persosFiltre[0], item: item, gold: prix});
+      }
+    },
+    assignItem() {
+      const item = this.persosFiltre[0].itemsAchetes.filter(i => i.nom === this.selectedItemName)[0];
+      const body = this.persosFiltre[0].emplacements.filter(e => e.nom === this.selectedBodyName)[0];
+      const itemLimites = itemLimits.filter(i => i.slot === body.nom)[0];
+      if (!body.items.includes(item)) {
+        if (itemLimites.limit <= body.items.length) {
+          alert('Il y a trop d\'items sur cette partie du corps');
+        }
+        else if (!itemLimites.types.includes(item.type)) {
+          alert('Ce type d\'item ne peut pas être placé sur cette partie du corps');
+        }
+        else if (confirm('Voulez-vous vraiment assigner ' + item.nom + ' à ' + body.nom + ' ?')) {
+          this.$store.commit('assign', {item: item, body: body});
+        }
+      }
+      else {
+        if (confirm('Voulez-vous vraiment désassigner ' + item.nom + ' de ' + body.nom + ' ?')) {
+          this.$store.commit('unassign', {item: item, body: body});
+        }
+      }
     }
   },
 }

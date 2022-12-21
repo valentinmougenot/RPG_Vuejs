@@ -55,7 +55,7 @@ export default {
   name: 'TownsView',
   components: {
     CheckedList: () => import('@/components/CheckedList.vue'),
-    ShopView: () => import('@/components/ShopView.vue')
+    ShopView: () => import('@/components/ShopDetails')
   },
   data: () => ({
     filter: '',

@@ -34,6 +34,22 @@ export default new Vuex.Store({
         state.currentBoutique.itemStock.splice(state.currentBoutique.itemStock.indexOf(item), 1)
         state.currentPerso.or -= item.prix
       }
+    },
+    stock(state, item) {
+      state.currentBoutique.itemStock.push(item)
+    },
+    resell(state, data) {
+      if (state.currentBoutique) {
+        state.currentBoutique.itemStock.push(data.item)
+        state.currentPerso.itemsAchetes.splice(state.currentPerso.itemsAchetes.indexOf(data.item), 1)
+        state.currentPerso.or += data.gold
+      }
+    },
+    assign(state, data) {
+        data.body.items.push(data.item)
+    },
+    unassign(state, data) {
+        data.body.items.splice(data.body.items.indexOf(data.item), 1)
     }
   },
   // actions = fonctions asynchrone pour mettre à jour le state, en faisant appel aux mutations, via la fonction commit()
@@ -55,6 +71,11 @@ export default new Vuex.Store({
       } else {
         console.log(response.data)
       }
+    },
+    async order(context, data) {
+      setTimeout(() => {
+        context.commit('stock', data.item)
+      }, data.time)
     }
   },
     // getters = fonctions pour récupérer des données du state
