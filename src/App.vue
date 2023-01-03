@@ -1,11 +1,10 @@
 <template>
   <v-app>
     <NavBar
-      :titles="[{text: 'Persos', color: 'primary'}, {text: 'Ville', color: 'secondary'}]"
-      @menu-clicked="menuClicked"
+      :titles="[{text: 'Persos', color: 'primary', path: '/persos'}, {text: 'Ville', color: 'secondary', path: '/towns'}]"
     ></NavBar>
     <v-main>
-      <router-view/>
+      <router-view name="central"/>
     </v-main>
   </v-app>
 </template>
@@ -25,13 +24,6 @@ export default {
   }),
   methods: {
     ...mapActions(['getAllTowns', "getAllCharacs"]),
-    menuClicked(index) {
-      if (index === 0) {
-        this.$router.push({path: '/persos'})
-      } else if (index === 1) {
-        this.$router.push({path: '/towns'})
-      }
-    }
   },
   mounted() {
     this.getAllTowns()
